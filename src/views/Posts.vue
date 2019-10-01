@@ -166,30 +166,22 @@ export default {
       let self = this;
       for (let i = 0; i < this.content.length; i++) {
         const element = this.content[i];
-        // console.log(element);
-
         if (element.type === "text") {
           let element = document.querySelector(".text-editor" + i || "");
-
-          this.content[i].data = new MediumEditor(element).setContent(element);
+          this.editor[i].getContent();
+          this.content[i].data = this.editor[i].serialize();
         } else if (element.type === "main") {
-          this.editor[i || `main`].getContent();
-
-          this.content[0].data.description = this.editor[
-            i || `main`
-          ].serialize();
-
-          console.log(this.editor[i || `main`]);
-          //   console.log(this.content[0].data.description);
+          this.editor[`main`].getContent();
+          this.content[0].data.description = this.editor[`main`].serialize();
         }
       }
-      //   firebase
-      //     .database()
-      //     .ref("Posts/" + Date.now())
-      //     .set(self.content)
-      //     .then(() => {
-      //       self.makeToast(`Пост успешно создан`);
-      //     });
+      firebase
+        .database()
+        .ref("Posts/" + Date.now())
+        .set(self.content)
+        .then(() => {
+          self.makeToast(`Пост успешно создан`);
+        });
     },
     putData(i, type) {
       this.$set(this.content[i], "type", type);
