@@ -11,12 +11,21 @@
     <div class="row">
       <div class="col">
         <h1>Создание поста</h1>
-        {{content[0].data.title}}
+        {{rubricsData}}
         <b-card
           class="mb-2"
           title="Основная информация"
           sub-title="Загружайте картинки в соотношении сторон согласно требованиям статей"
         >
+          <p>Выберите категорию</p>
+          <select class="browser-default custom-select" v-model="content[0].data.rubricId">
+            <option selected disabled>Выберите категорию</option>
+            <option
+              v-for="(rubric, index) in rubricsData"
+              :key="index"
+              :value="rubric.id"
+            >{{rubric.name}}</option>
+          </select>
           <div class="input-group my-3">
             <input
               type="text"
@@ -90,10 +99,12 @@
 <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
 <script>
 import firebase from "firebase";
+import { mdbSelect } from "mdbvue";
 import { log } from "util";
 export default {
   data() {
     return {
+      rubricsData: [],
       postName: "",
       postDesc: "",
       toastCount: 0,
@@ -113,10 +124,35 @@ export default {
       ]
     };
   },
+  beforeMount() {
+    this.getRubrics();
+  },
   mounted() {
     this.invokeTextEditor();
   },
   methods: {
+    getRubrics() {
+      let data = null;
+      this.rubricsData = [];
+      firebase
+        .database()
+        .ref("Rubrics/")
+        .once("value", snapshot => {
+          data = snapshot.val();
+        })
+        .then(() => {
+          for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+              const element = data[key];
+              this.rubricsData.push({
+                name: element.name,
+                delete: "",
+                id: key
+              });
+            }
+          }
+        });
+    },
     invokeTextEditor(i = "") {
       var elements = document.querySelector(".text-editor" + i, {
         placeholder: {
@@ -165,15 +201,26 @@ export default {
     },
     sendPost() {
       let self = this;
+      const getData = editorValue => {
+        for (const key in editorValue) {
+          if (editorValue.hasOwnProperty(key)) {
+            const element = editorValue[key];
+            return element.value;
+          }
+        }
+      };
       for (let i = 0; i < this.content.length; i++) {
         const element = this.content[i];
         if (element.type === "text") {
           let element = document.querySelector(".text-editor" + i || "");
           this.editor[i].getContent();
-          this.content[i].data = this.editor[i].serialize();
+          this.content[i].data = getData(this.editor[i].serialize());
         } else if (element.type === "main") {
           this.editor[`main`].getContent();
-          this.content[0].data.description = this.editor[`main`].serialize();
+          this.content[0].data.description = getData(
+            this.editor[`main`].serialize()
+          );
+
           console.log(this.content[0].data.description);
         }
       }
