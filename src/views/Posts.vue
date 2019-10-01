@@ -224,13 +224,13 @@ export default {
           console.log(this.content[0].data.description);
         }
       }
-      // firebase
-      //   .database()
-      //   .ref("Posts/" + Date.now())
-      //   .set(self.content)
-      //   .then(() => {
-      //     self.makeToast(`Пост успешно создан`);
-      //   });
+      firebase
+        .database()
+        .ref("Posts/" + Date.now())
+        .set(self.content)
+        .then(() => {
+          self.makeToast(`Пост успешно создан`);
+        });
     },
     putData(i, type) {
       this.$set(this.content[i], "type", type);
