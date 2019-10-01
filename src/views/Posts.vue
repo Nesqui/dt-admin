@@ -90,6 +90,7 @@
 <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
 <script>
 import firebase from "firebase";
+import { log } from "util";
 export default {
   data() {
     return {
@@ -173,15 +174,16 @@ export default {
         } else if (element.type === "main") {
           this.editor[`main`].getContent();
           this.content[0].data.description = this.editor[`main`].serialize();
+          console.log(this.content[0].data.description);
         }
       }
-      firebase
-        .database()
-        .ref("Posts/" + Date.now())
-        .set(self.content)
-        .then(() => {
-          self.makeToast(`Пост успешно создан`);
-        });
+      // firebase
+      //   .database()
+      //   .ref("Posts/" + Date.now())
+      //   .set(self.content)
+      //   .then(() => {
+      //     self.makeToast(`Пост успешно создан`);
+      //   });
     },
     putData(i, type) {
       this.$set(this.content[i], "type", type);
