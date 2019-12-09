@@ -38,7 +38,7 @@
                         </div>
                         <div>
                           <div>
-                            <p class="m-0 p-0">{{$moment.unix(index/1000).format("mm:hh DD.MM.YY")}}</p>
+                            <p class="m-0 p-0">{{$moment.unix(index/1000).format("hh:mm DD.MM.YY")}}</p>
 
                             <mdb-btn
                               class="btn-dribbble"
